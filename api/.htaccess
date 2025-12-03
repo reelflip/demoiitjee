@@ -1,0 +1,6 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+</IfModule>
+# Allow access to files in this directory
+Order Allow,Deny
+Allow from all
