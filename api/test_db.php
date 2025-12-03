@@ -1,4 +1,5 @@
 <?php
+error_reporting(0); // Suppress warnings for clean JSON
 include_once 'config.php';
 
 $response = [];
@@ -19,7 +20,7 @@ try {
     }
     $response['tables'] = $tables;
 
-} catch(PDOException $e) {
+} catch(Exception $e) {
     $response['status'] = 'ERROR';
     $response['message'] = $e->getMessage();
 }

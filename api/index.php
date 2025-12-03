@@ -1,5 +1,5 @@
 <?php
-header("Content-Type: application/json");
+include_once 'config.php';
 echo json_encode([
     "status" => "active", 
     "message" => "JEE Tracker API is running", 
