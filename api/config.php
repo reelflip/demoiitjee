@@ -19,6 +19,7 @@ $password = "YourStrongPassword";
 try {
     $conn = new PDO("mysql:host=" . $host . ";dbname=" . $db_name, $username, $password);
     $conn->exec("set names utf8mb4");
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch(PDOException $exception) {
     http_response_code(500);
     echo json_encode(["error" => "Connection error: " . $exception->getMessage()]);
