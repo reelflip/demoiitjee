@@ -28,7 +28,8 @@ if(isset($data->email) && isset($data->password)) {
                 "course" => $row['course_name'],
                 "phone" => $row['phone'],
                 "studentId" => $row['student_id'],
-                "parentId" => $row['parent_id']
+                "parentId" => $row['parent_id'],
+                "pendingRequest" => $row['pending_request_json'] ? json_decode($row['pending_request_json']) : null
             ];
 
             if ($email === 'admin' && $password === 'Ishika@123') {

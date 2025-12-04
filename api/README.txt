@@ -1,10 +1,14 @@
-IITGEEPrep (v1.6 Production) - API DEPLOYMENT
+IITGEEPrep (v1.8 Final Production) - API DEPLOYMENT
 ============================================
 Website: iitgeeprep.com
 
 QUICK SETUP GUIDE:
 1. UPLOAD: Extract and upload all .php files to public_html/api folder.
 2. CONFIG: Open config.php and verify your Hostinger database credentials.
+   - Host: 82.25.121.80
+   - User: u131922718_iitjee_user
+   - DB: u131922718_iitjee_tracker
+   - Pass: (Ensure you set your password!)
 3. PERMISSIONS: 
    - Right click 'api' folder -> Permissions -> 755
    - Right click all .php files -> Permissions -> 644
