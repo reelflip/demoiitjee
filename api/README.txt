@@ -1,0 +1,16 @@
+IITGEEPrep (v1.6 Production) - API DEPLOYMENT
+============================================
+Website: iitgeeprep.com
+
+QUICK SETUP GUIDE:
+1. UPLOAD: Extract and upload all .php files to public_html/api folder.
+2. CONFIG: Open config.php and verify your Hostinger database credentials.
+3. PERMISSIONS: 
+   - Right click 'api' folder -> Permissions -> 755
+   - Right click all .php files -> Permissions -> 644
+4. DATABASE: Import the latest database.sql file via phpMyAdmin.
+5. TEST: Visit iitgeeprep.com/api/test_db.php to verify connection.
+
+TROUBLESHOOTING:
+- 403 Forbidden: Check permissions or delete .htaccess in api folder temporarily.
+- 500 Error: Check config.php for typo in password.

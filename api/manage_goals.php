@@ -2,14 +2,11 @@
 include_once 'config.php';
 $data = json_decode(file_get_contents("php://input"));
 $method = $_SERVER['REQUEST_METHOD'];
-
 if ($method === 'POST') {
-    // Add Goal
     $stmt = $conn->prepare("INSERT INTO daily_goals (id, user_id, goal_text, is_completed) VALUES (?, ?, ?, 0)");
     $stmt->execute([$data->id, $data->user_id, $data->text]);
     echo json_encode(["message" => "Goal added"]);
 } elseif ($method === 'PUT') {
-    // Toggle Status
     $stmt = $conn->prepare("UPDATE daily_goals SET is_completed = NOT is_completed WHERE id = ?");
     $stmt->execute([$data->id]);
     echo json_encode(["message" => "Goal toggled"]);

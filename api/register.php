@@ -9,7 +9,6 @@ if(isset($data->email) && isset($data->password)) {
     $role = $data->role;
 
     try {
-        // Check if email exists
         $check = $conn->prepare("SELECT id FROM users WHERE email = ?");
         $check->execute([$email]);
         if($check->rowCount() > 0) {
@@ -18,8 +17,7 @@ if(isset($data->email) && isset($data->password)) {
             exit();
         }
 
-        // is_verified set to 1 by default, no token needed
-        $query = "INSERT INTO users (email, password_hash, full_name, role, is_verified, institute, target_year) VALUES (:email, :pass, :name, :role, 1, :inst, :year)";
+        $query = "INSERT INTO users (email, password_hash, full_name, role, is_verified, institute, target_year, target_exam) VALUES (:email, :pass, :name, :role, 1, :inst, :year, :exam)";
         
         $stmt = $conn->prepare($query);
         $stmt->bindParam(":email", $email);
@@ -28,11 +26,11 @@ if(isset($data->email) && isset($data->password)) {
         $stmt->bindParam(":role", $role);
         $stmt->bindParam(":inst", $data->institute);
         $stmt->bindParam(":year", $data->targetYear);
+        $stmt->bindParam(":exam", $data->targetExam);
 
         if($stmt->execute()) {
             $newUserId = $conn->lastInsertId();
             
-            // Return success with Normalized Data
             echo json_encode([
                 "message" => "Registration successful", 
                 "user" => [
@@ -42,7 +40,8 @@ if(isset($data->email) && isset($data->password)) {
                     "role" => $role,
                     "isVerified" => true,
                     "institute" => $data->institute,
-                    "targetYear" => $data->targetYear
+                    "targetYear" => $data->targetYear,
+                    "targetExam" => $data->targetExam
                 ]
             ]);
         } else {
