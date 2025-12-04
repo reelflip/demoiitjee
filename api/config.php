@@ -12,10 +12,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // DB CONFIGURATION FROM ADMIN PANEL INPUTS
-$host = "localhost"; 
+$host = "82.25.121.80"; 
 $db_name = "u131922718_iitjee_tracker";
 $username = "u131922718_iitjee_user";
-$password = "IITjeeprep@12345";
+$password = "YourStrongPassword";
 
 try {
     $conn = new PDO("mysql:host=" . $host . ";dbname=" . $db_name, $username, $password);
