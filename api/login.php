@@ -15,16 +15,30 @@ if(isset($data->email) && isset($data->password)) {
         if($stmt->rowCount() > 0) {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             
+            // Normalize user data to camelCase for Frontend
+            $userObj = [
+                "id" => $row['id'],
+                "name" => $row['full_name'], // DB: full_name -> App: name
+                "email" => $row['email'],
+                "role" => strtoupper($row['role']),
+                "isVerified" => ($row['is_verified'] == 1),
+                "targetYear" => (int)$row['target_year'],
+                "institute" => $row['institute'],
+                "school" => $row['school'],
+                "course" => $row['course_name'],
+                "phone" => $row['phone'],
+                "studentId" => $row['student_id'],
+                "parentId" => $row['parent_id']
+            ];
+
             // Admin Override check (For recovery, can be removed in prod)
             if ($email === 'admin' && $password === 'Ishika@123') {
-                 unset($row['password_hash']);
-                 echo json_encode(["message" => "Login successful", "user" => $row]);
+                 echo json_encode(["message" => "Login successful", "user" => $userObj]);
                  exit();
             }
 
             if(password_verify($password, $row['password_hash'])) {
-                unset($row['password_hash']);
-                echo json_encode(["message" => "Login successful", "user" => $row]);
+                echo json_encode(["message" => "Login successful", "user" => $userObj]);
             } else {
                  http_response_code(401);
                  echo json_encode(["message" => "Invalid password."]);

@@ -32,7 +32,7 @@ if(isset($data->email) && isset($data->password)) {
         if($stmt->execute()) {
             $newUserId = $conn->lastInsertId();
             
-            // Return success. Frontend handles manual login redirect.
+            // Return success with Normalized Data
             echo json_encode([
                 "message" => "Registration successful", 
                 "user" => [
