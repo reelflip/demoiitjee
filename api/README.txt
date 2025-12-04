@@ -14,6 +14,7 @@ QUICK SETUP GUIDE:
    - Right click all .php files -> Permissions -> 644
 4. DATABASE: Import the latest database.sql file via phpMyAdmin.
 5. TEST: Visit iitgeeprep.com/api/test_db.php to verify connection.
+6. SEO: Upload sitemap.xml and robots.txt to public_html root.
 
 TROUBLESHOOTING:
 - 403 Forbidden: Check permissions or delete .htaccess in api folder temporarily.

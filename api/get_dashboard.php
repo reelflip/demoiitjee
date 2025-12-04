@@ -3,24 +3,42 @@ include_once 'config.php';
 $user_id = $_GET['user_id'];
 if (!$user_id) { echo json_encode(["error" => "No User ID"]); exit(); }
 try {
+    // 1. Fetch User Profile Data (for Sync)
+    $userQuery = $conn->prepare("SELECT id, pending_request_json, parent_id, student_id FROM users WHERE id = ?");
+    $userQuery->execute([$user_id]);
+    $userData = $userQuery->fetch(PDO::FETCH_ASSOC);
+    
+    $userProfileSync = [
+        "pendingRequest" => $userData['pending_request_json'] ? json_decode($userData['pending_request_json']) : null,
+        "parentId" => $userData['parent_id'],
+        "studentId" => $userData['student_id']
+    ];
+
+    // 2. Fetch Progress, Goals, etc.
     $progQuery = $conn->prepare("SELECT * FROM topic_progress WHERE user_id = ?");
     $progQuery->execute([$user_id]);
     $progress = $progQuery->fetchAll(PDO::FETCH_ASSOC);
+    
     $goalsQuery = $conn->prepare("SELECT * FROM daily_goals WHERE user_id = ? AND created_at = CURDATE()");
     $goalsQuery->execute([$user_id]);
     $goals = $goalsQuery->fetchAll(PDO::FETCH_ASSOC);
+    
     $blogQuery = $conn->prepare("SELECT * FROM backlogs WHERE user_id = ?");
     $blogQuery->execute([$user_id]);
     $backlogs = $blogQuery->fetchAll(PDO::FETCH_ASSOC);
+    
     $mistakeQuery = $conn->prepare("SELECT * FROM mistake_notebook WHERE user_id = ?");
     $mistakeQuery->execute([$user_id]);
     $mistakes = $mistakeQuery->fetchAll(PDO::FETCH_ASSOC);
+    
     $ttQuery = $conn->prepare("SELECT generated_slots_json FROM timetable_settings WHERE user_id = ?");
     $ttQuery->execute([$user_id]);
     $timetable = $ttQuery->fetch(PDO::FETCH_ASSOC);
+    
     $attemptsQuery = $conn->prepare("SELECT * FROM test_attempts WHERE user_id = ? ORDER BY attempt_date DESC");
     $attemptsQuery->execute([$user_id]);
     $attempts = $attemptsQuery->fetchAll(PDO::FETCH_ASSOC);
+    
     // Fetch detailed results for attempts (optional, can be separate API for speed)
     foreach($attempts as &$attempt) {
         $detailQuery = $conn->prepare("SELECT * FROM attempt_details WHERE attempt_id = ?");
@@ -34,7 +52,9 @@ try {
             ];
         }, $details);
     }
+    
     echo json_encode([ 
+        "userProfileSync" => $userProfileSync,
         "progress" => $progress, 
         "goals" => $goals, 
         "backlogs" => $backlogs, 
