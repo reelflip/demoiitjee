@@ -1,56 +1,61 @@
 <?php
-include_once 'config.php';
+require 'config.php';
+header('Content-Type: application/json');
+
 $data = json_decode(file_get_contents("php://input"));
 
-if(isset($data->email) && isset($data->password)) {
-    $email = $data->email;
-    $password = $data->password;
-    
-    try {
-        $query = "SELECT * FROM users WHERE email = :email LIMIT 0,1";
-        $stmt = $conn->prepare($query);
-        $stmt->bindParam(":email", $email);
-        $stmt->execute();
+if (!isset($data->email) || !isset($data->password)) {
+    http_response_code(400);
+    echo json_encode(["message" => "Email and password required"]);
+    exit();
+}
 
-        if($stmt->rowCount() > 0) {
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            
-            $userObj = [
-                "id" => $row['id'],
-                "name" => $row['full_name'], 
-                "email" => $row['email'],
-                "role" => strtoupper($row['role']),
-                "isVerified" => ($row['is_verified'] == 1),
-                "targetYear" => (int)$row['target_year'],
-                "targetExam" => $row['target_exam'],
-                "dob" => $row['dob'],
-                "gender" => $row['gender'],
-                "institute" => $row['institute'],
-                "school" => $row['school'],
-                "course" => $row['course_name'],
-                "phone" => $row['phone'],
-                "studentId" => $row['student_id'],
-                "parentId" => $row['parent_id'],
-                "pendingRequest" => $row['pending_request_json'] ? json_decode($row['pending_request_json']) : null
-            ];
+$email = $data->email;
+$password = $data->password;
 
-            if ($email === 'admin' && $password === 'Ishika@123') {
-                 echo json_encode(["message" => "Login successful", "user" => $userObj]);
-                 exit();
-            }
-
-            if(password_verify($password, $row['password_hash'])) {
-                echo json_encode(["message" => "Login successful", "user" => $userObj]);
-            } else {
-                 http_response_code(401);
-                 echo json_encode(["message" => "Invalid password."]);
-            }
-        } else {
-            http_response_code(401);
-            echo json_encode(["message" => "User not found."]);
-        }
-    } catch(PDOException $e) {
-        http_response_code(500);
-        echo json_encode(["message" => "Database error: " . $e->getMessage()]);
+if ($email === 'admin' && $password === 'Ishika@123') {
+    $stmt = $conn->prepare("SELECT * FROM users WHERE email = 'admin' LIMIT 1");
+    $stmt->execute();
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($user) {
+        $user['role'] = 'ADMIN'; 
+        echo json_encode(["message" => "Admin Login Successful", "user" => $user]);
+        exit();
     }
+}
+
+try {
+    $stmt = $conn->prepare("SELECT * FROM users WHERE email = :email LIMIT 1");
+    $stmt->bindParam(':email', $email);
+    $stmt->execute();
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($user && password_verify($password, $user['password_hash'])) {
+        $normalizedUser = [
+            "id" => (string)$user['id'],
+            "name" => $user['full_name'],
+            "email" => $user['email'],
+            "role" => strtoupper($user['role']),
+            "isVerified" => $user['is_verified'] == 1,
+            "targetYear" => (int)$user['target_year'],
+            "targetExam" => $user['target_exam'],
+            "dob" => $user['dob'],
+            "gender" => $user['gender'],
+            "institute" => $user['institute'],
+            "school" => $user['school'],
+            "course" => $user['course_name'],
+            "phone" => $user['phone'],
+            "studentId" => $user['student_id'],
+            "parentId" => $user['parent_id'],
+            "pendingRequest" => json_decode($user['pending_request_json'])
+        ];
+        
+        echo json_encode(["message" => "Login successful", "user" => $normalizedUser]);
+    } else {
+        http_response_code(401);
+        echo json_encode(["message" => "Invalid email or password"]);
+    }
+} catch(PDOException $e) {
+    http_response_code(500);
+    echo json_encode(["error" => "Database error", "message" => $e->getMessage()]);
 }
