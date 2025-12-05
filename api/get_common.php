@@ -8,7 +8,6 @@ try {
     $notifs = $conn->query("SELECT * FROM notifications ORDER BY created_at DESC LIMIT 5")->fetchAll(PDO::FETCH_ASSOC);
     $posts = $conn->query("SELECT id, title, excerpt, content, author, category, image_url as imageUrl, created_at as date FROM blog_posts ORDER BY created_at DESC")->fetchAll(PDO::FETCH_ASSOC);
     
-    // Fetch Tests
     $tests = $conn->query("SELECT * FROM tests")->fetchAll(PDO::FETCH_ASSOC);
     
     foreach($tests as &$test) {
@@ -40,4 +39,3 @@ try {
     http_response_code(500);
     echo json_encode(["error" => $e->getMessage()]);
 }
-?>

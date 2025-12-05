@@ -22,4 +22,3 @@ if ($method === 'PUT' && isset($data->id)) {
         echo json_encode(["message" => "User deleted"]);
     } catch (PDOException $e) { http_response_code(500); echo json_encode(["error" => $e->getMessage()]); }
 } else { http_response_code(405); echo json_encode(["error" => "Method not allowed"]); }
-?>

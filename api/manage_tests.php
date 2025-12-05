@@ -26,4 +26,3 @@ if (isset($data->action) && $data->action === 'create_test') {
         echo json_encode(["message" => "Test created"]);
     } catch (Exception $e) { $conn->rollBack(); http_response_code(500); echo json_encode(["error" => $e->getMessage()]); }
 }
-?>

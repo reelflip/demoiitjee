@@ -59,4 +59,3 @@ if(isset($data->email) && isset($data->password)) {
         echo json_encode(["message" => "Database error: " . $e->getMessage()]);
     }
 }
-?>

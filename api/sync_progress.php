@@ -19,4 +19,3 @@ if(isset($data->user_id) && isset($data->topic_id)) {
     }
     echo json_encode(["message" => "Progress saved"]);
 }
-?>

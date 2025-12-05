@@ -1,5 +1,4 @@
 <?php
-error_reporting(0);
 include_once 'config.php';
 $response = [];
 try {
@@ -18,4 +17,3 @@ try {
     $response['message'] = $e->getMessage();
 }
 echo json_encode($response);
-?>
