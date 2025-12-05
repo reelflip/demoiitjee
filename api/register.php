@@ -7,6 +7,8 @@ if(isset($data->email) && isset($data->password)) {
     $password = password_hash($data->password, PASSWORD_BCRYPT);
     $name = $data->name;
     $role = $data->role;
+    $dob = !empty($data->dob) ? $data->dob : NULL;
+    $gender = !empty($data->gender) ? $data->gender : NULL;
 
     try {
         $check = $conn->prepare("SELECT id FROM users WHERE email = ?");
@@ -17,7 +19,7 @@ if(isset($data->email) && isset($data->password)) {
             exit();
         }
 
-        $query = "INSERT INTO users (email, password_hash, full_name, role, is_verified, institute, target_year, target_exam) VALUES (:email, :pass, :name, :role, 1, :inst, :year, :exam)";
+        $query = "INSERT INTO users (email, password_hash, full_name, role, is_verified, institute, target_year, target_exam, dob, gender) VALUES (:email, :pass, :name, :role, 1, :inst, :year, :exam, :dob, :gender)";
         
         $stmt = $conn->prepare($query);
         $stmt->bindParam(":email", $email);
@@ -27,6 +29,8 @@ if(isset($data->email) && isset($data->password)) {
         $stmt->bindParam(":inst", $data->institute);
         $stmt->bindParam(":year", $data->targetYear);
         $stmt->bindParam(":exam", $data->targetExam);
+        $stmt->bindParam(":dob", $dob);
+        $stmt->bindParam(":gender", $gender);
 
         if($stmt->execute()) {
             $newUserId = $conn->lastInsertId();
@@ -41,7 +45,9 @@ if(isset($data->email) && isset($data->password)) {
                     "isVerified" => true,
                     "institute" => $data->institute,
                     "targetYear" => $data->targetYear,
-                    "targetExam" => $data->targetExam
+                    "targetExam" => $data->targetExam,
+                    "dob" => $dob,
+                    "gender" => $gender
                 ]
             ]);
         } else {

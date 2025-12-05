@@ -3,18 +3,15 @@ include_once 'config.php';
 $user_id = $_GET['user_id'];
 if (!$user_id) { echo json_encode(["error" => "No User ID"]); exit(); }
 try {
-    // 1. Fetch User Profile Data (for Sync)
     $userQuery = $conn->prepare("SELECT id, pending_request_json, parent_id, student_id FROM users WHERE id = ?");
     $userQuery->execute([$user_id]);
     $userData = $userQuery->fetch(PDO::FETCH_ASSOC);
-    
     $userProfileSync = [
         "pendingRequest" => $userData['pending_request_json'] ? json_decode($userData['pending_request_json']) : null,
         "parentId" => $userData['parent_id'],
         "studentId" => $userData['student_id']
     ];
 
-    // 2. Fetch Progress, Goals, etc.
     $progQuery = $conn->prepare("SELECT * FROM topic_progress WHERE user_id = ?");
     $progQuery->execute([$user_id]);
     $progress = $progQuery->fetchAll(PDO::FETCH_ASSOC);
@@ -31,26 +28,20 @@ try {
     $mistakeQuery->execute([$user_id]);
     $mistakes = $mistakeQuery->fetchAll(PDO::FETCH_ASSOC);
     
-    $ttQuery = $conn->prepare("SELECT generated_slots_json FROM timetable_settings WHERE user_id = ?");
+    $ttQuery = $conn->prepare("SELECT config_json, generated_slots_json FROM timetable_settings WHERE user_id = ?");
     $ttQuery->execute([$user_id]);
-    $timetable = $ttQuery->fetch(PDO::FETCH_ASSOC);
+    $timetableRow = $ttQuery->fetch(PDO::FETCH_ASSOC);
+    $timetable = $timetableRow ? ["config" => json_decode($timetableRow['config_json']), "slots" => json_decode($timetableRow['generated_slots_json'])] : null;
     
     $attemptsQuery = $conn->prepare("SELECT * FROM test_attempts WHERE user_id = ? ORDER BY attempt_date DESC");
     $attemptsQuery->execute([$user_id]);
     $attempts = $attemptsQuery->fetchAll(PDO::FETCH_ASSOC);
     
-    // Fetch detailed results for attempts (optional, can be separate API for speed)
     foreach($attempts as &$attempt) {
         $detailQuery = $conn->prepare("SELECT * FROM attempt_details WHERE attempt_id = ?");
         $detailQuery->execute([$attempt['id']]);
         $details = $detailQuery->fetchAll(PDO::FETCH_ASSOC);
-        // Map details back to frontend structure
-        $attempt['detailedResults'] = array_map(function($d) {
-            return [
-                "questionId" => $d['question_id'],
-                "status" => $d['status']
-            ];
-        }, $details);
+        $attempt['detailedResults'] = array_map(function($d) { return ["questionId" => $d['question_id'], "status" => $d['status']]; }, $details);
     }
     
     echo json_encode([ 
@@ -59,7 +50,7 @@ try {
         "goals" => $goals, 
         "backlogs" => $backlogs, 
         "mistakes" => $mistakes, 
-        "timetable" => $timetable ? json_decode($timetable['generated_slots_json']) : null,
+        "timetable" => $timetable,
         "attempts" => $attempts
     ]);
 } catch(Exception $e) { http_response_code(500); echo json_encode(["error" => $e->getMessage()]); }

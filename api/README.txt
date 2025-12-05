@@ -1,4 +1,4 @@
-IITGEEPrep (v1.8 Final Production) - API DEPLOYMENT
+IITGEEPrep (v2.2 Final Release) - API DEPLOYMENT
 ============================================
 Website: iitgeeprep.com
 

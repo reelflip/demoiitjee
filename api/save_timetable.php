@@ -1,7 +1,1 @@
-<?php
-include_once 'config.php';
-$data = json_decode(file_get_contents("php://input"));
-$stmt = $conn->prepare("INSERT INTO timetable_settings (user_id, config_json, generated_slots_json) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE config_json=VALUES(config_json), generated_slots_json=VALUES(generated_slots_json)");
-$stmt->execute([$data->user_id, json_encode($data->config), json_encode($data->slots)]);
-echo json_encode(["message" => "Timetable saved"]);
-?>
+<?php include_once 'config.php'; $data = json_decode(file_get_contents("php://input")); $stmt = $conn->prepare("INSERT INTO timetable_settings (user_id, config_json, generated_slots_json) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE config_json=VALUES(config_json), generated_slots_json=VALUES(generated_slots_json)"); $stmt->execute([$data->user_id, json_encode($data->config), json_encode($data->slots)]); echo json_encode(["message" => "Timetable saved"]); ?>

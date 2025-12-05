@@ -23,6 +23,8 @@ if(isset($data->email) && isset($data->password)) {
                 "isVerified" => ($row['is_verified'] == 1),
                 "targetYear" => (int)$row['target_year'],
                 "targetExam" => $row['target_exam'],
+                "dob" => $row['dob'],
+                "gender" => $row['gender'],
                 "institute" => $row['institute'],
                 "school" => $row['school'],
                 "course" => $row['course_name'],
