@@ -1,0 +1,1 @@
+<?php require 'config.php'; header('Content-Type: application/json'); $d=json_decode(file_get_contents("php://input")); $conn->query("INSERT INTO topic_videos (topic_id, video_url, description) VALUES ('{$d->topicId}', '{$d->url}', '{$d->desc}') ON DUPLICATE KEY UPDATE video_url='{$d->url}', description='{$d->desc}'"); echo json_encode(["message"=>"Saved"]);

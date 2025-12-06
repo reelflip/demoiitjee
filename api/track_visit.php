@@ -1,1 +1,1 @@
-<?php require 'config.php'; $d=date('Y-m-d'); $conn->query("INSERT INTO site_traffic (visit_date, visit_count) VALUES ('$d', 1) ON DUPLICATE KEY UPDATE visit_count=visit_count+1");
+<?php require 'config.php'; $d=date('Y-m-d'); $conn->query("INSERT INTO site_traffic (visit_date, visit_count) VALUES ('$d', 1) ON DUPLICATE KEY UPDATE visit_count=visit_count+1"); echo json_encode(["status"=>"ok"]);
